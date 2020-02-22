@@ -1,0 +1,59 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+#define left node*2
+#define right node*2+1
+#define mid (b+e)/2
+using namespace std;
+int a[100010], tree[400010], prop[400010];
+void init(int node, int b, int e)
+{
+    if(b==e)
+    {
+        tree[node]=a[e];
+        return;
+    }
+    init(left, b, mid), init(right, mid+1, e);
+    tree[node]=tree[left]+tree[right];
+}
+void lazy(int node, int b, int e){
+    tree[node]+=prop[node]*(e-b+1);
+    if(b!=e) prop[left]+=prop[node], prop[right]+=prop[node];
+    prop[node]=0;
+}
+int query(int node, int b, int e, int i, int j)
+{
+    if(prop[node]) lazy(node, b, e);
+    if(i>e||j<b) return 0;
+    if(b>=i&&e<=j) return tree[node];
+    return query(left, b, mid, i, j)+query(right, mid+1, e, i, j);
+}
+void update(int node, int b, int e, int i, int val)
+{
+    if(b>i||e<i) return;
+    if(b==i&&e==i)
+    {
+        tree[node]=val;
+        return;
+    }
+    update(left, b, mid, i, val), update(right, mid+1, e, i, val);
+    tree[node]=tree[left]+tree[right];
+}
+void update(int node, int b, int e, int i, int j, int val)
+{
+    if(prop[node]) lazy(node, b, e);
+    if(b>j||e<i) return;
+    if(b>=i&&e<=j)
+    {
+        tree[node]=val*(e-b+1);
+        if(b!=e)  prop[left]+=val, prop[right]+=val;
+        return;
+    }
+    update(left, b, mid, i, j, val), update(right, mid+1, e, i, j, val);
+    tree[node]=tree[left]+tree[right];
+}
+int main()
+{
+    memset(tree, 0, sizeof(tree));
+    memset(prop, 0, sizeof(prop));
+    memset(a, 0, sizeof(a));
+}
