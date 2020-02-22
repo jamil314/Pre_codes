@@ -1,0 +1,21 @@
+bitset<1000010>pr;
+int pl[100000], s;
+void sieve(int mx)
+{
+    pl[s++]=2;
+    int p;
+    for(p=3; p*p<=mx; p+=2)if(!pr[p]){pl[s++]=p; for(int i=p*p; i<=mx; i+=p+p)pr[i]=1;}
+    for(int i=p; i<=mx; i+=2)if(!pr[i])pl[s++]=i;
+}
+int divs(int n){
+    int rep=1;
+    for(int i=0; i<s; i++){
+        if(pl[i]*pl[i]>n) break;
+        int c=0;
+        while(!(n%pl[i])){c++; n/=pl[i];}
+        c++;
+        rep*=c;
+    }
+    if(n>1)rep*=2;
+    return rep;
+}
