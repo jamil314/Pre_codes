@@ -1,0 +1,20 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int l1, l2, dp[110][110], x[110], y[110], tst;
+int lcs(int a, int b){
+    if(dp[a][b]!=-1)return dp[a][b];
+    if(a>l1||b>l2)return 0;
+    if(x[a]==y[b])return dp[a][b]=1+lcs(a+1, b+1);
+    return dp[a][b]=max(lcs(a+1, b), lcs(a, b+1));
+}
+int main()
+{
+    while(cin>>l1>>l2&&l1&&l2){
+        tst++;
+        memset(dp, -1, sizeof(dp));
+        for(int i=1; i<=l1; i++)cin>>x[i];
+        for(int i=1; i<=l2; i++)cin>>y[i];
+        cout<<"Twin Towers #"<<tst<<"\nNumber of Tiles : "<<lcs(1, 1)<<"\n\n";
+    }
+}
