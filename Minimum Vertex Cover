@@ -1,0 +1,31 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int dp[1010][2];
+vector<int>v[1010];
+int ver(int node, int f, int p){
+    if(dp[node][f]!=-1) return dp[node][f];
+    int ret=f;
+    for(int i=0; i<v[node].size(); i++){
+        int x=v[node][i];
+        if(x!=p) ret+=f?min(ver(x, 1, node), ver(x, 0, node)):ver(x, 1, node);
+    }
+    return dp[node][f]=ret;
+}
+int main()
+{
+    int n;
+    while(scanf("%d", &n)&&n){
+        memset(dp, -1, sizeof(dp));
+        for(int i=0; i<1010; i++)v[i].clear();
+        int x, y;
+        for(int i=1; i<=n; i++){
+            cin>>x;
+            while(x--){
+                cin>>y;
+                v[i].push_back(y);
+            }
+        }
+        cout<<max(1, min(ver(1, 0, 0), ver(1, 1, 0)))<<"\n";
+    }
+}
