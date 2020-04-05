@@ -1,0 +1,29 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int mask, ans;
+void pebbles(int mask){
+    int c=0;
+    for(int i=0; i<12; i++)if(mask&1<<i)c++;
+    ans=min(c, ans);
+    for(int i=2; i<12; i++)
+        if(!(mask&1<<i))
+            if(mask&1<<i-1 and mask&1<<i-2) pebbles(((mask&~(1<<i-1))&~(1<<i-2))|1<<i);
+    for(int i=0; i<10; i++)
+        if(!(mask&1<<i))
+            if(mask&1<<i+1 and mask&1<<i+2) pebbles(((mask&~(1<<i+1))&~(1<<i+2))|1<<i);
+}
+int main()
+{
+    int tst;
+    cin>>tst;
+    while(tst--){
+        mask=0;
+        ans=12;
+        string s;
+        cin>>s;
+        for(int i=0; i<12; i++)if(s[i]=='o')mask=mask|1<<i;
+        pebbles(mask);
+        cout<<ans<<"\n";
+    }
+}
