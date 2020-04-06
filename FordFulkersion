@@ -1,0 +1,56 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+    int tt;
+    scanf("%d", &tt);
+    for(int tst=1; tst<=tt; tst++){
+        int res[110][110]={0};
+        vector<int>v[110];
+        printf("Case %d: ", tst);
+        int n, b, e, x, y, z, m;
+        cin>>n>>b>>e>>m;
+        while(m--){
+            cin>>x>>y>>z;
+            res[x][y]+=z;
+            res[y][x]+=z;
+            v[x].push_back(y);
+            v[y].push_back(x);
+        }
+        int ans=0;
+        while(1){
+            int vis[110]={0}, par[110];
+            queue<int>q;
+            q.push(b);
+            vis[b]++;
+            while(!q.empty()){
+                x=q.front();
+                q.pop();
+                for(int i=0; i<v[x].size(); i++){
+                    y=v[x][i];
+                    if(!vis[y]&&res[x][y]){
+                        par[y]=x;
+                        vis[y]++;
+                        q.push(y);
+                    }
+                }
+            }
+            if(!vis[e]){cout<<ans<<"\n"; break; }
+            int bottleneck=99999999;
+            y=e;
+            while(y!=b){
+                x=par[y];
+                bottleneck=min(bottleneck, res[x][y]);
+                y=x;
+            }
+            y=e;
+            while(y!=b){
+                x=par[y];
+                res[x][y]=res[y][x]-=bottleneck;
+                y=x;
+            }
+            ans+=bottleneck;
+        }
+    }
+}
