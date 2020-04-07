@@ -1,0 +1,38 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+    int tt;
+    cin>>tt;
+    for(int tst=1; tst<=tt; tst++){
+        int n;
+        cin>>n;
+        int boy[110][110], girl[210][110], stable[210]={0};
+        for(int i=1; i<=n; i++) for(int j=0; j<n; j++)cin>>boy[i][j];
+        for(int i=1; i<=n; i++) for(int j=0; j<n; j++)cin>>girl[i+n][j];
+        queue<int>q;
+        for(int i=1; i<=n; i++)q.push(i);
+        while(!q.empty()){
+            int b=q.front(); q.pop();
+            for(int i=0; i<n; i++){
+                int g=boy[b][i];
+                if(!stable[g]){stable[g]=b; break;}
+                int f=0;
+                for(int j=0; j<n; j++){
+                    if(girl[g][j]==stable[g]) break;
+                    if(girl[g][j]==b){
+                        q.push(stable[g]);
+                        stable[g]=b;
+                        f++;
+                    }
+                }
+                if(f)break;
+            }
+        }
+        cout<<"Case "<<tst<<":";
+        for(int i=1; i<=n; i++)cout<<" ("<<stable[i+n]<<" "<<i+n<<")";
+        cout<<"\n";
+    }
+}
+
