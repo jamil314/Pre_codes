@@ -1,0 +1,50 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+#define mx 10010
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(v, x) memset(v, x, sizeof(v))
+#define FAST ios_base::sync_with_stdio(false); cin.tie(NULL);
+using namespace std;
+int n, low[mx], dis[mx], par[mx];
+vector<int>v[mx];
+vector<pair<int, int>>ans;
+void dfs(int x, int t){
+    low[x]=dis[x]=t;
+    for(auto y:v[x]){
+        if(dis[y]){if(par[x]!=y) low[x]=min(dis[y], low[x]); continue;}
+        par[y]=x;
+        dfs(y, t+1);
+        low[x]=min(low[x], low[y]);
+        if(low[y]>dis[x])ans.pb({min(x, y), max(x, y)});
+    }
+}
+int main()
+{
+    //FAST
+    int tt;
+    cin>>tt;
+    for(int tst=1; tst<=tt; tst++){
+        cin>>n;
+        FILL(low, 0), FILL(dis, 0), FILL(par, -1);
+        for(int i=0; i<n; i++)v[i].clear();
+        ans.clear();
+        for(int i=0; i<n; i++){
+            int x, t, y;
+            cin>>x;
+            cin.ignore(256, '(');
+            cin>>t;
+            cin.ignore(256, ')');
+            while(t--){
+                cin>>y;
+                v[x].pb(y);
+            }
+        }
+        for(int i=0; i<n; i++)if(!dis[i])dfs(i, 1);
+        sort(all(ans));
+        cout<<"Case "<<tst<<":\n"<<ans.size()<<" critical links\n";
+        for(auto out:ans)cout<<out.F<<" - "<<out.S<<"\n";
+    }
+}
