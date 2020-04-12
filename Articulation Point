@@ -1,0 +1,44 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+#define mx 10010
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(v, x) memset(v, x, sizeof(v))
+#define FAST ios_base::sync_with_stdio(false); cin.tie(NULL);
+using namespace std;
+int n, low[mx], dis[mx], par[mx], art[mx], ans, t;
+vector<int>v[mx];
+void dfs(int x){
+    low[x]=dis[x]=t++;
+    for(auto y:v[x]){
+        if(dis[y]){if(par[x]!=y) low[x]=min(dis[y], low[x]); continue;}
+        par[y]=x;
+        dfs(y);
+        low[x]=min(low[x], low[y]);
+        if(x==1){if(y!=v[x][0]){ if(!art[1]) ans++; art[1]++;} continue;}
+        if(low[y]>=dis[x]){if(!art[x])ans++; art[x]++;}
+    }
+}
+int main()
+{
+    FAST
+    int tt;
+    cin>>tt;
+    for(int tst=1; tst<=tt; tst++){
+        int m, x, y;
+        cin>>n>>m;
+        FILL(low, 0), FILL(dis, 0), FILL(par, -1), FILL(art, 0);
+        for(int i=1; i<=n; i++)v[i].clear();
+        ans=0;
+        while(m--){
+            cin>>x>>y;
+            v[x].pb(y);
+            v[y].pb(x);
+        }
+        t=1;
+        dfs(1);
+        cout<<"Case "<<tst<<": "<<ans<<"\n";
+    }
+}
