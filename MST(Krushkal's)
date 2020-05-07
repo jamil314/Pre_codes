@@ -1,0 +1,28 @@
+//                               Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+int main()
+{
+    int n, m, x, y;
+    long long ans=0, z;
+    cin>>n>>m;
+    int leader[n+1];
+    for(int i=1; i<=n; i++)leader[i]=i;
+    vector<pair<long long, pair<int, int>>>v;
+    for(int i=0; i<m; i++){
+        cin>>x>>y>>z;
+        v.push_back({z, {x, y}});
+    }
+    sort(v.begin(), v.end());
+    for(auto vv:v){
+        x=vv.second.first, y=vv.second.second, z=vv.first;
+        int a=x, b=y;
+        while(leader[a]!=a)a=leader[a];
+        while(leader[b]!=b)b=leader[b];
+        if(a!=b){
+            leader[a]=b;
+            ans+=z;
+        }
+    }
+    cout<<ans<<"\n";
+}
