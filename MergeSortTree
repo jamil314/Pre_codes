@@ -1,0 +1,52 @@
+#include <bits/stdc++.h>
+#define mid (b+e)/2
+#define left node*2
+#define right node*2+1
+#define mx 100005
+using namespace std;
+pair<int, int>ara[mx];
+int arr[mx];
+vector<int>tree[4*mx];
+void init(int node, int b, int e)
+{
+    if(b==e)
+    {
+        tree[node].push_back(ara[b].second);
+        return;
+    }
+    init(left,b,mid);
+    init(right,mid+1,e);
+    merge(tree[left].begin(),tree[left].end(),tree[right].begin(),tree[right].end(),back_inserter(tree[node]));
+}
+
+int query(int node, int b, int e, int i, int j, int k)
+{
+    if(b==e)
+        return tree[node].back();
+    int x = upper_bound(tree[left].begin(),tree[left].end(),j)-lower_bound(tree[left].begin(),tree[left].end(),i);
+    if(x>=k)
+        return query(left,b,mid,i,j,k);
+    return query(right,mid+1,e,i,j,k-x);
+}
+
+int main()
+{
+    int n,m;
+    scanf("%d%d", &n, &m);
+    for(int i=1;i<=n;i++)
+    {
+        scanf("%d", &ara[i].first);
+        ara[i].second=i;
+        arr[i]=ara[i].first;
+    }
+    sort(ara+1,ara+n+1);
+    init(1,1,n);
+    while(m--)
+    {
+        int a,b,c;
+        scanf("%d%d%d", &a, &b, &c);
+        int ans=query(1,1,n,a,b,c);
+        ans=arr[ans];
+        printf("%d\n",ans);   ///cTh sorted element from a
+    }
+}
