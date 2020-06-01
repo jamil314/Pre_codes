@@ -1,0 +1,41 @@
+//                Bismillahir Rahmanir Rahim
+#include<bits/stdc++.h>
+using namespace std;
+#define mod 1000000007
+#define base 31
+#define inv 129032259
+int main() {
+	int n, m;
+	scanf("%d%d", &n, &m);
+	int x[n-1];
+	int a, b;
+	scanf("%d", &b);
+	for(int i=0; i<n-1; i++){
+	scanf("%d", &a);
+		x[i]=a-b;
+		b=a;
+	}
+	scanf("%d", &b);
+	long long bs=1, check=0;
+	for(int i=0; i<m-1; i++){
+		scanf("%d", &a);
+		check=(check+((a-b)*bs+mod)%mod)%mod;
+		bs=(bs*base)%mod;
+		b=a;
+	}
+	long long has=0;
+	int c=0;
+	b=1;
+	bs=1;
+	for(int i=0; i<m-1; i++){
+		has=(has+((x[i]*bs)+mod)%mod)%mod;
+		bs=(bs*base)%mod;
+	}
+	if(has==check)c++;
+	for(int i=m-1; i<n-1; i++){
+		has=(has-x[i+1-m]+(bs*x[i])%mod+mod)%mod;
+		has=(has*inv)%mod;
+		if(has==check)c++;
+	}
+	printf("%d", c);
+}
