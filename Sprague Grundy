@@ -1,0 +1,50 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: Sprague Grundy
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+int grundy[100010], a[6]={1, 4, 27, 256, 3125, 46656}; //a=> possible moves
+int cal(int x){
+    if(!x) return 0;
+    if(~grundy[x]) return grundy[x];
+    set<int>s;
+    for(int i=0; i<6; i++) if(x-a[i]>=0) s.insert(cal(x-a[i]));
+    int ret=0;
+    while(s.find(ret)!=s.end()) ret++;
+    return grundy[x]=ret;
+}
+int main() {
+    FILL(grundy, -1);
+    int tst;
+    cin>>tst;
+    while(tst--){
+        int n, ans=0, x;
+        cin>>n;
+        while(n--){
+            cin>>x;
+            ans^=cal(x);
+        }
+        cout<<(ans?"Little Chef":"Head Chef")<<"\n";
+    }
+}
+
