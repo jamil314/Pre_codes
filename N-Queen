@@ -1,0 +1,63 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: N-Queen
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+int column[10], dia1[20], dia2[20], queen[10], x, y;
+vector<int>ans;
+void nqueen(int n){
+    if(n==y) n++;
+    if(n==9){
+        int t=0;
+        for(int i=1; i<9; i++) t=t*10+queen[i];
+        ans.pb(t);
+        return ;
+    }
+    for(int i=1; i<9; i++){
+        if(column[i]||dia1[i+n]||dia2[8+n-i]) continue;
+        column[i]=dia1[i+n]=dia2[8+n-i]=1;
+        queen[n]=i;
+        nqueen(n+1);
+        column[i]=dia1[i+n]=dia2[8+n-i]=0;
+    }
+}
+int main() {
+    int tst;
+    cin>>tst;
+    while(tst--){
+        FILL(column, 0), FILL(queen, 0), FILL(dia1, 0), FILL(dia2, 0);
+        ans.clear();
+        cin>>x>>y;
+        queen[y]=x;
+        column[x]=dia1[x+y]=dia2[8+y-x]=1;
+        nqueen(1);
+        sort(all(ans));
+        cout<<"SOLN       COLUMN\n #      1 2 3 4 5 6 7 8\n\n";
+        for(int i=0; i<ans.size(); i++){
+            if(i<9) cout<<" ";
+            cout<<i+1<<"     ";
+            string s=to_string(ans[i]);
+            for(auto xx:s) cout<<" "<<xx;
+            cout<<"\n";
+        }
+        if(tst) cout<<"\n";
+    }
+}
+
