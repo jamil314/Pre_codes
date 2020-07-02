@@ -1,0 +1,89 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: Suffix Array (radix sort)(nlogn)
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+string text;
+int l;
+bool comp1(string pattern, int x){
+    return pattern<=text.substr(x, l);
+}
+bool comp2(int x, string pattern){
+    return pattern>=text.substr(x, l);
+}
+void radix_Sort(vector<pair<pair<int, int>, int>> &a){
+    int n=a.size();
+    int cnt[n]={0};
+    for(auto x:a) cnt[x.F.S]++;
+    vector<pair<pair<int, int>, int>> tmp(n);
+    vector<int>pos(n);
+    pos[0]=0;
+    for(int i=1; i<n; i++) pos[i]=pos[i-1]+cnt[i-1];
+    for(auto x:a) tmp[pos[x.F.S]++]=x;
+    a=tmp;
+ 
+    FILL(cnt, 0);
+    for(auto x:a) cnt[x.F.F]++;
+    pos[0]=0;
+    for(int i=1; i<n; i++) pos[i]=pos[i-1]+cnt[i-1];
+    for(auto x:a) tmp[pos[x.F.F]++]=x;
+    a=tmp;
+}
+ 
+vector<int> suffix_Array(string s){
+    int n=s.size();
+    vector<int>p(n), c(n);  //p=suffix array, c= mapping of segment of string
+    vector<pair<char, int>> b(n);
+    for(int i=0; i<n; i++) b[i]={s[i], i};
+    sort(all(b));
+    for(int i=0; i<n; i++) p[i]=b[i].S;
+    c[p[0]]=0;
+    for(int i=1; i<n; i++) c[p[i]]=(b[i].F==b[i-1].F?c[p[i-1]]:c[p[i-1]]+1);
+    for(int k=1; k<=n; k<<=1){
+        vector<pair<pair<int, int>, int>>a(n);
+        for(int i=0; i<n; i++) a[i]={{c[i], c[(i+k)%n]}, i};
+        sort(all(a));
+        for(int i=0; i<n; i++) p[i]=a[i].S;
+        c[p[0]]=0;
+        for(int i=1; i<n; i++) c[p[i]]=(a[i].F==a[i-1].F?c[p[i-1]]:c[p[i-1]]+1);
+    }
+    return p;
+}
+int main() {
+    Fast
+    string s;
+    cin>>s;
+    text=s;
+    vector<int>v=suffix_Array(s+"$");
+    int tst;
+    cin>>tst;
+    while(tst--){
+        string p;
+        cin>>p;
+        l=p.size();
+        auto x=upper_bound(all(v), p, comp1) , y=lower_bound(all(v), p, comp2);
+        cout<<y-x<<"\n";;
+    }
+}
