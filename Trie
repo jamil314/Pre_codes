@@ -1,0 +1,59 @@
+#include <bits/stdc++.h>
+#define tsize 500010
+#define INF 0x3f3f3f3f
+using namespace std;
+string ans;
+int pos;
+struct trie{
+    int cur = 1, tdata[tsize][27];
+    char tchar[tsize];
+    bool e[tsize];
+    trie(){ memset(tdata, 0x3f, sizeof tdata); }
+    void insert_word(int node, string word){
+        if (word.length() > 0){
+            if (tdata[node][word[0] - 'a'] == INF)
+                tdata[node][word[0] - 'a'] = cur++;
+            tchar[tdata[node][word[0] - 'a']] = word[0];
+            insert_word(tdata[node][word[0] - 'a'], word.substr(1));
+        }
+        else tdata[node][26]=0;
+    }
+    int search_word(int node, string word){
+        if (word.length() == 0) return node;
+        if (tdata[node][word[0] - 'a'] == INF) return -1;
+        return search_word(tdata[node][word[0] - 'a'], word.substr(1));
+    }
+    void dfs(int node, string s){
+        if(!tdata[node][26]&&node!=pos)ans=(ans+s+"\n");
+        for(int i=0; i<26; i++){
+            if(tdata[node][i]!=INF)
+                dfs(tdata[node][i], s+(char)('a'+i));
+        }
+    }
+};
+
+int main(){
+    trie* t = new trie();
+    int n;
+    cin>>n;
+    string s;
+    while(n--){
+        cin>>s;
+        t->insert_word(0, s);
+    }
+    cin>>n;
+    int tst=0;
+    while(n--){
+        tst++;
+        printf("Case #%d:\n", tst);
+        cin>>s;
+        pos=t->search_word(0, s);
+        if(pos==-1){
+            printf("No match.\n");
+            continue;
+        }
+        ans="";
+            t->dfs(pos, s);
+        cout<<ans;
+    }
+}
