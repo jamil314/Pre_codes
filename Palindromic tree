@@ -1,0 +1,96 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: Palindromic tree
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define _i ({int a; scanf("%d", &a); a;})
+#define _l ({ll a; scanf("%lld", &a); a;})
+#define _d ({double a; scanf("%lf", &a); a;})
+#define _c ({char a; cin>>a; a;})
+#define _s ({string a; cin>>a; a;})
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+
+struct NODE {
+    int next[26];
+    int len;
+    int link;
+    int num;
+};
+
+int len;
+string s;
+NODE tree[mx];
+int sz;
+int node;
+long long ans;
+
+void add(int pos) {
+    int curlen = 0;
+    int child = s[pos] - 'a';
+    while (1) {
+        curlen = tree[node].len;
+        if (pos - 1 - curlen >= 0 && s[pos - 1 - curlen] == s[pos])  break;
+        node = tree[node].link;
+    }
+    if (tree[node].next[child]) {
+        node = tree[node].next[child];
+        return;
+    }
+    int par=node;
+    sz++;
+    node = sz;
+    tree[node].len = tree[par].len + 2;
+    tree[par].next[child] = node;
+    if (tree[node].len == 1) {
+        tree[node].link = 2;
+        tree[node].num = 1;
+        return;
+    }
+
+    while (true) {
+        par = tree[par].link;
+        curlen = tree[par].len;
+        if (pos - 1 - curlen >= 0 && s[pos - 1 - curlen] == s[pos]) {
+            tree[node].link = tree[par].next[child];
+            break;
+        }
+    }
+    tree[node].num = 1 + tree[tree[node].link].num;
+    return;
+}
+
+void init() {
+    sz = 2; node = 2;
+    tree[1].len = -1; tree[1].link = 1;
+    tree[2].len = 0; tree[2].link = 1;
+}
+int main() {
+    s=_s;
+    init();
+    for(int i=0; i<s.size(); i++){
+        add(i);
+        ans+=tree[node].num;
+    }
+    cout<<ans;
+}
