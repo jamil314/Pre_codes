@@ -1,0 +1,144 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: suffix automata
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define _i ({int a; scanf("%d", &a); a;})
+#define _l ({ll a; scanf("%lld", &a); a;})
+#define _d ({double a; scanf("%lf", &a); a;})
+#define _c ({char a; cin>>a; a;})
+#define _s ({string a; cin>>a; a;})
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+struct suffix_automata{
+    struct state{
+        int len=0, link=-1;
+        map<char, int>next;
+        ll cnt1=0, cnt2=0, cnt3=0;
+    } st[mx];
+    int last=0, sz=1;
+    void add(char c){
+        int node=sz++, par=last;
+        last=node;
+        st[node].len=st[par].len+1;
+        while(~par &&!st[par].next[c]){
+            st[par].next[c]=node;
+            par=st[par].link;
+        }
+        if(par==-1){
+            st[node].link=0;
+            return;
+        }
+        int found=st[par].next[c];
+        if(st[found].len==st[par].len+1){
+            st[node].link=found;
+            return;
+        }
+        int clone=sz++;
+        st[clone]=st[found];
+        st[clone].len=st[par].len+1;
+        st[node].link=st[found].link=clone;
+        while(~par &&st[par].next[c]==found){
+            st[par].next[c]=clone;
+            par=st[par].link;
+        }
+    }
+    void build(string s){
+        for(auto c:s) add(c);
+        vis.assign(sz, 0);
+        dfs(0);
+    }
+    vector<int>vis;
+    void dfs(int x){
+        vis[x]++;
+        for(auto it:st[x].next){
+            if(!vis[it.S]) dfs(it.S);
+            if(it.F=='#') st[x].cnt1++;
+            else st[x].cnt1+=st[it.S].cnt1, st[x].cnt3+=st[it.S].cnt3;
+            st[x].cnt2+=st[it.S].cnt2;
+        }
+        st[x].cnt3++;
+        st[x].cnt2+=st[x].cnt1;
+    }
+
+
+    /**___________________________prints kth string as if they were stored in a set**/
+    void kth_unique(int i, int k, int x){
+        if(i>=k) return;
+        for(auto it:st[x].next){
+            if(it.F=='#') continue;
+            if(i+st[it.S].cnt3>=k){
+                i++;
+                cout<<it.F;
+                kth_unique(i, k, it.S);
+                return;
+            }
+            else i+=st[it.S].cnt3;
+        }
+    }
+
+
+
+
+    /**_________________________prints kth string as if they were stored in a multiset
+    void kth(int node, int k, int x){
+        if(node>=k) return;
+        for(auto it:st[x].next){
+            if(node+st[it.S].cnt2>=k){
+                node+=st[it.S].cnt1;
+                cout<<it.F;
+                kth(node, k, it.S);
+                return;
+            }
+            else node+=st[it.S].cnt2;
+        }
+        cout<<"No such line.";
+    }
+    **/
+
+
+    /** ________________________Prints the structure_______________________________
+    void print_all(){
+        for(int i=0; i<sz; i++){
+            cout<<i<<"# ("<<st[i].cnt1<<":"<<st[i].cnt2<<":"<<st[i].cnt3<<") Link: "<<st[i].link<<" Transitions: ";
+            for(auto it:st[i].next) cout<<"("<<it.F<<":"<<it.S<<")  ";
+            cout<<"\n";
+        }
+    }
+    **/
+
+}s_a;
+
+int main() {
+    Fast
+    string s;
+    int q, k;
+    cin>>s>>q;
+    s+="#";
+    s_a.build(s);
+    while(q--){
+        cin>>k;
+        s_a.kth_unique(0, k, 0);
+        cout<<"\n";
+    }
+}
