@@ -1,0 +1,65 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: convex_hull_trick
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define _i ({int a; scanf("%d", &a); a;})
+#define _l ({ll a; scanf("%lld", &a); a;})
+#define _d ({double a; scanf("%lf", &a); a;})
+//#define _c ({char a; cin>>a; a;})
+#define _s ({string a; cin>>a; a;})
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+/*
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+#define ordered_set tree<int, null_type,less<int>, rb_tree_tag,tree_order_statistics_node_update>
+#define ordered_multiset tree<pair<int, int>, null_type,less<pair<int, int> >, rb_tree_tag,tree_order_statistics_node_update>
+*/
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+
+ll a[100010], dp[100010];
+vector<ll>m, c;
+void add(ll _m, ll _c){
+    m.pb(_m);
+    c.pb(_c);
+    int s=m.size();
+    while(s>2){
+        if(1.0*(c[s-1]-c[s-3]) *(m[s-3]-m[s-2])>1.0*(c[s-2]-c[s-3])*(m[s-3]-m[s-1])) break;
+        s--;
+        m.erase(m.end()-2);
+        c.erase(c.end()-2);
+    }
+}
+int pos=0;
+ll y(int i, ll x){ return  m[i]*x+c[i];}
+ll query(ll x){
+    if(pos>=m.size()) pos=m.size()-1;
+    while(pos<m.size()-1 && y(pos+1, x)<y(pos, x)) pos++;
+    return y(pos, x);
+}
+int main() {
+    Fast
+    int n, x;
+    cin>>n;
+    for(int i=0; i<n; i++) cin>>a[i];
+    for(int i=0; i<n; i++) {
+        cin>>x;
+        if(i) dp[i]=query(a[i]);
+        add(x, dp[i]);
+    }
+    cout<<dp[n-1];
+}
