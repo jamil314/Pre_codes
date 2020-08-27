@@ -1,0 +1,11 @@
+multiset < int > lis ;
+    multiset < int > :: iterator  it ;
+    scanf("%d",&n);
+    for( int i = 0 ; i < n ; i++ )
+    {
+        scanf("%d",&input[i]);
+        lis.insert( input[i]);
+        it = lis.upper_bound( input[i]);
+        if( it != lis.end()) lis.erase(it);
+    }
+    cout << lis.size() << endl ;
