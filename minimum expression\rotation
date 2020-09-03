@@ -1,0 +1,54 @@
+//                        Bismillahir Rahmanir Rahim
+//ALGO:
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define MX 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+#define FR(i, n) for(int i=0; i<n; i++)
+#define FOR(i, n) for(int i=1; i<=n; i++)
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+int minimumExpression(string s){
+    s+=s;
+    int n=s.size(), i=0, j=1, k=0;
+    while(max(i, j)+k<n){
+        if(s[i+k]==s[j+k]) k++;
+        else if(s[i+k]>s[j+k]){
+            i+=k+1;
+            if(i<=j) i=j+1;
+            k=0;
+        }
+        else{
+            j+=k+1;
+            if(j<=i) j=i+1;
+            k=0;
+        }
+    }
+    return min(i, j);
+}
+void solve(){
+    string s;
+    cin>>s;
+    cout<<minimumExpression(s);
+}
+int main() {
+    Fast
+    int tst=1;
+    //cin>>tst;
+    for(int T=1; T<=tst; T++){
+        //cout<<"Case "<<T<<": ";
+        solve();
+    }
+}
