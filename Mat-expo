@@ -1,0 +1,24 @@
+#define sz 2
+#define V vector<vector<ll>>
+V I(sz, vector<ll>(sz, 0)), O(sz, vector<ll>(sz, 0));
+V multiply(V x, V y){
+    V ret=O;
+    FR(i, sz) FR(j, sz) FR(k, sz)
+        ret[i][k]=(ret[i][k]+x[i][j]*y[j][k])%mod;
+    return ret;
+}
+V expo(V x, ll pw){
+    V ret=I;
+    while(pw){
+        if(pw&1) ret=multiply(ret, x);
+        x=multiply(x, x);
+        pw>>=1;
+    }
+    return ret;
+}
+void solve(){
+    ll n;
+    cin>>n;
+    V a={{0, 1}, {1, 1}};
+    cout<<expo(a, n)[1][0];
+}
