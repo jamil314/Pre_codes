@@ -23,20 +23,28 @@ using namespace __gnu_pbds;
 const double Pi=acos(-1);
 using namespace std;
 int debug=01;
-int z[mx];
-void calZ(string s){
+vector<int> calZ(string s){
     int b=0, e=0, n=s.size();
+    vector<int>z(n, 0);
     z[0]=n;
     for(int i=1; i<n; i++){
         if(i<=e) z[i]=min(e-i+1, z[i-b]);
-        while(i+z[i]<n&&s[z[i]]==s[i+z[i]) z[i]++;
+        while(i+z[i]<n&&s[z[i]]==s[i+z[i]]) z[i]++;
         if(i+z[i]-1>e) b=i, e=i+z[i]-1;
     }
+    return z;
+}
+void solve(){
+    int n;
+    string s;
+    cin>>n>>s;
+    vector<int>v=calZ(s);
 }
 int main() {
-    string text, pattern;
-    cin>>text>>pattern;
-    string s=pattern+"#"+pattern;
-    calZ(s);
+    Fast
+    int tst;
+    cin>>tst;
+    while(tst--){
+        solve();
+    }
 }
-
