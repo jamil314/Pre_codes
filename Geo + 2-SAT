@@ -1,0 +1,216 @@
+//                        Bismillahir Rahmanir Rahim
+//ALGO: 2-SAT
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define MX 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+#define FR(i, n) for(int i=0; i<n; i++)
+#define FOR(i, n) for(int i=1; i<=n; i++)
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+
+const double inf = 1e100;
+const double eps = 1e-9;
+const double PI = acos((double)-1.0);
+int sign(double x) { return (x > eps) - (x < -eps); }
+struct PT {
+    double x, y;
+    PT() { x = 0, y = 0; }
+    PT(double x, double y) : x(x), y(y) {}
+    PT(const PT &p) : x(p.x), y(p.y)    {}
+    PT operator + (const PT &a) const { return PT(x + a.x, y + a.y); }
+    PT operator - (const PT &a) const { return PT(x - a.x, y - a.y); }
+    PT operator * (const double a) const { return PT(x * a, y * a); }
+    friend PT operator * (const double &a, const PT &b) { return PT(a * b.x, a * b.y); }
+    PT operator / (const double a) const { return PT(x / a, y / a); }
+    bool operator == (PT a) const { return sign(a.x - x) == 0 && sign(a.y - y) == 0; }
+    bool operator != (PT a) const { return !(*this == a); }
+    bool operator < (PT a) const { return sign(a.x - x) == 0 ? y < a.y : x < a.x; }
+    bool operator > (PT a) const { return sign(a.x - x) == 0 ? y > a.y : x > a.x; }
+    double norm() { return sqrt(x * x + y * y); }
+    double norm2() { return x * x + y * y; }
+    PT perp() { return PT(-y, x); }
+    double arg() { return atan2(y, x); }
+    PT truncate(double r) { // returns a vector with norm r and having same direction
+        double k = norm();
+        if (!sign(k)) return *this;
+        r /= k;
+        return PT(x * r, y * r);
+    }
+};
+inline double dot(PT a, PT b) { return a.x * b.x + a.y * b.y; }
+inline double dist2(PT a, PT b) { return dot(a - b, a - b); }
+inline double dist(PT a, PT b) { return sqrt(dot(a - b, a - b)); }
+inline double cross(PT a, PT b) { return a.x * b.y - a.y * b.x; }
+inline double cross2(PT a, PT b, PT c) { return cross(b - a, c - a); }
+inline int orientation(PT a, PT b, PT c) { return sign(cross(b - a, c - a)); }
+PT perp(PT a) { return PT(-a.y, a.x); }
+PT rotateccw90(PT a) { return PT(-a.y, a.x); }
+PT rotatecw90(PT a) { return PT(a.y, -a.x); }
+PT rotateccw(PT a, double t) { return PT(a.x * cos(t) - a.y * sin(t), a.x * sin(t) + a.y * cos(t)); }
+PT rotatecw(PT a, double t) { return PT(a.x * cos(t) + a.y * sin(t), -a.x * sin(t) + a.y * cos(t)); }
+double SQ(double x) { return x * x; }
+double rad_to_deg(double r) { return (r * 180.0 / PI); }
+double deg_to_rad(double d) { return (d * PI / 180.0); }
+double get_angle(PT a, PT b) {
+    double costheta = dot(a, b) / a.norm() / b.norm();
+    return acos(max((double)-1.0, min((double)1.0, costheta)));
+}
+// 0 if not parallel, 1 if parallel, 2 if collinear
+bool is_parallel(PT a, PT b, PT c, PT d) {
+    double k = fabs(cross(b - a, d - c));
+    if (k < eps){
+        if (fabs(cross(a - b, a - c)) < eps && fabs(cross(c - d, c - a)) < eps) return 2;
+        else return 1;
+    }
+    else return 0;
+}
+// returns true if  point p is on line segment ab
+bool is_point_on_seg(PT a, PT b, PT p) {
+    if (fabs(cross(p - b, a - b)) < eps) {
+        if (p.x < min(a.x, b.x) || p.x > max(a.x, b.x)) return false;
+        if (p.y < min(a.y, b.y) || p.y > max(a.y, b.y)) return false;
+        return true;
+    }
+    return false;
+}
+// intersection point between segment ab and segment cd assuming unique intersection exists
+bool seg_seg_intersection(PT a, PT b, PT c, PT d, PT &ans) {
+    double oa = cross2(c, d, a), ob = cross2(c, d, b);
+    double oc = cross2(a, b, c), od = cross2(a, b, d);
+    if (oa * ob < 0 && oc * od < 0){
+        ans = (a * ob - b * oa) / (ob - oa);
+        return 1;
+    }
+    else return 0;
+}
+// intersection point between segment ab and segment cd assuming unique intersection may not exists
+// se.size()==0 means no intersection
+// se.size()==1 means one intersection
+// se.size()==2 means range intersection
+set<PT> seg_seg_intersection_inside(PT a,  PT b,  PT c,  PT d) {
+    PT ans;
+    if (seg_seg_intersection(a, b, c, d, ans)) return {ans};
+    set<PT> se;
+    if (is_point_on_seg(c, d, a)) se.insert(a);
+    if (is_point_on_seg(c, d, b)) se.insert(b);
+    if (is_point_on_seg(a, b, c)) se.insert(c);
+    if (is_point_on_seg(a, b, d)) se.insert(d);
+    return se;
+}
+// check if two lines are same
+bool are_lines_same(PT a, PT b, PT c, PT d) {
+    if (fabs(cross(a - c, c - d)) < eps && fabs(cross(b - c, c - d)) < eps) return true;
+    return false;
+}
+// intersection point between ab and cd assuming unique intersection exists
+bool line_line_intersection(PT a, PT b, PT c, PT d, PT &ans) {
+    double a1 = a.y - b.y, b1 = b.x - a.x, c1 = cross(a, b);
+    double a2 = c.y - d.y, b2 = d.x - c.x, c2 = cross(c, d);
+    double det = a1 * b2 - a2 * b1;
+    if (det == 0) return 0;
+    ans = PT((b1 * c2 - b2 * c1) / det, (c1 * a2 - a1 * c2) / det);
+    return 1;
+}
+bool ray_ray_intersection(PT as, PT at, PT bs, PT bt) {
+	PT ad = at - as, bd = bt - bs;
+    double dx = bs.x - as.x, dy = bs.y - as.y;
+    double det = bd.x * ad.y - bd.y * ad.x;
+    if (fabs(det) < eps) return 0;
+    double u = (dy * bd.x - dx * bd.y) / det;
+    double v = (dy * ad.x - dx * ad.y) / det;
+    if (sign(u) >= 0 && sign(v) >= 0) return 1;
+    else return 0;
+}
+double getf(PT a, PT b, PT x) {
+	if (is_point_on_seg(a, b, x)) return 0;
+	return dist(b, x);
+}
+double gets(PT a, PT b, PT x) {
+	return dist(a, x);
+}
+
+struct twosat {
+	int n;	// total size combining +, -. must be even.
+	vector< vector<int> > g, gt;
+	vector<bool> vis, res;
+	vector<int> comp;
+	stack<int> ts;
+	twosat(int vars=0) {
+		n = vars << 1;
+		g.resize(n);
+		gt.resize(n);
+	}
+	//add this type of condition->
+	//add(a,af,b,bf) means if a is af then b must need to be bf
+	void add(int a,bool af,int b,bool bf)
+	{   //cout<<a<<":"<<af<<":"<<b<<":"<<bf<<"\n";
+	  a += a + (af ^ 1);
+		b += b + (bf ^ 1);
+		g[a].push_back(b);
+		gt[b].push_back(a);
+	}
+	void dfs1(int u) {
+		vis[u] = true;
+		for(int v : g[u]) if(!vis[v]) dfs1(v);
+		ts.push(u);
+	}
+	void dfs2(int u, int c) {
+		comp[u] = c;
+		for(int v : gt[u]) if(comp[v] == -1) dfs2(v, c);
+	}
+	bool ok() {
+		vis.resize(n, false);
+		for(int i = 0; i < n; ++i) if(!vis[i]) dfs1(i);
+		int scc = 0;
+		comp.resize(n, -1);
+		while(!ts.empty()) {
+			int u = ts.top();
+			ts.pop();
+			if(comp[u] == -1) dfs2(u, scc++);
+		}
+		res.resize(n / 2);
+		for(int i = 0; i < n; i += 2) {
+			if(comp[i] == comp[i + 1]) return false;
+			res[i / 2] = (comp[i] > comp[i + 1]);
+		}
+		return true;
+	}
+};
+
+
+int main() {
+    Fast
+    int n;
+    while(cin>>n){
+        if(!n) return 0;
+        PT v[n][4];
+        twosat ts(n);
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<4; j++) cin>>v[i][j].x>>v[i][j].y;
+            vector<pair<double, pair<int, int>>> vv;
+            for(int ii=0; ii<4; ii++) for(int jj=0; jj<ii; jj++) vv.pb({dist2(v[i][ii], v[i][jj]), {ii, jj}});
+            sort(vv.rbegin(), vv.rend());
+            int x=vv[0].S.F, y=vv[0].S.S;
+            if(x==0) if(y!=2) swap(v[i][2], v[i][y]);
+            if(x==1) if(y!=3) swap(v[i][3], v[i][y]);
+            if(x==2) if(y!=0) swap(v[i][0], v[i][y]);
+            if(x==3) if(y!=1) swap(v[i][1], v[i][y]);
+        }
+        for(int i=0; i<n; i++) for(int j=0; j<i; j++)
+            for(int x=0; x<2; x++) for(int y=0; y<2; y++){
+                if(!seg_seg_intersection_inside(v[i][x], v[i][x+2], v[j][y], v[j][y+2]).empty())
+                    ts.add(i, x, j, y^1), ts.add(j, y, i, x^1);
+        }
+        cout<<(ts.ok()?"YES\n":"NO\n");
+    }
+}
