@@ -1,5 +1,6 @@
 //                        Bismillahir Rahmanir Rahim
 ///ALGO: LCA(Sparse Table)
+/// https://www.codechef.com/viewsolution/43895242
 #include<bits/stdc++.h>
 #define pb push_back
 #define F first
