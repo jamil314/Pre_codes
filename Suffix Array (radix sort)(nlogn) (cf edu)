@@ -1,3 +1,4 @@
+// https://codeforces.com/edu/course/2/lesson/2/4/practice/contest/269119/submission/85782102
 //                        Bismillahir Rahmanir Rahim
 ///ALGO: Suffix Array (radix sort)(nlogn)
 #pragma GCC optimize("Ofast")
