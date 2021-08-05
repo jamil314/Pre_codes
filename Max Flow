@@ -1,0 +1,92 @@
+//                        Bismillahir Rahmanir Rahim
+//ALGO: Max flow
+/// https://vjudge.net/problem/LightOJ-1153
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define MX 110
+#define mod 1000000007
+#define dout if(debug) cout
+#define FR(i, n) for(int i=0; i<n; i++)
+#define FOR(i, n) for(int i=1; i<=n; i++)
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+
+
+int n, res[MX][MX];
+vector<int> v[MX], w[MX];
+void add(int x, int y, int z){
+    res[x][y]+=z;
+    res[y][x]+=z;
+    v[x].push_back(y);
+    v[y].push_back(x);
+    w[x].push_back(z);
+    w[y].push_back(z);
+}
+int maxflow(int s, int t) {
+    int ans=0;
+    while(1){
+        int vis[110]={0}, par[110];
+        queue<int>q;
+        q.push(s);
+        vis[s]++;
+        while(!q.empty()){
+            int x=q.front();
+            q.pop();
+            for(int i=0; i<v[x].size(); i++){
+                int y=v[x][i];
+                if(!vis[y]&&res[x][y]){
+                    par[y]=x;
+                    vis[y]++;
+                    q.push(y);
+                }
+            }
+        }
+        if(!vis[t]) return ans;
+        int bottleneck=99999999; ///check if high enough
+        int y=t;
+        while(y!=s){
+            int x=par[y];
+            bottleneck=min(bottleneck, res[x][y]);
+            y=x;
+        }
+        y=t;
+        while(y!=s){
+            int x=par[y];
+            res[x][y]=res[y][x]-=bottleneck;
+            y=x;
+        }
+        ans+=bottleneck;
+    }
+}
+void solve(){
+    int s, t, m;
+    cin>>n>>s>>t>>m;
+    FILL(res, 0);
+    for(int i=0; i<=n; i++)v[i].clear(), w[i].clear();
+    while(m--){
+        int x, y, z;
+        cin>>x>>y>>z;
+        add(x, y, z);
+    }
+    cout<<maxflow(s, t)<<"\n";
+}
+int main() {
+    Fast
+    int tst=1;
+    cin>>tst;
+    for(int T=1; T<=tst; T++){
+        cout<<"Case "<<T<<": ";
+        solve();
+    }
+}
