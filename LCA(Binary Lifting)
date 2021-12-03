@@ -1,5 +1,5 @@
 //                        Bismillahir Rahmanir Rahim
-///ALGO: LCA(Sparse Table)
+///ALGO: LCA(Binary lifting)
 /// https://www.codechef.com/viewsolution/43895242
 #include<bits/stdc++.h>
 #define pb push_back
