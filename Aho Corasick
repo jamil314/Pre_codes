@@ -1,0 +1,96 @@
+//                        Bismillahir Rahmanir Rahim
+///ALGO: Aho-Corasick automation
+/// https://www.spoj.com/status/ns=28987233
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define mx 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+struct aho{
+    struct state{
+        int p=-1, link=-1, end=99999999;
+        vector<int>rev_link;
+        unordered_map<char, int>next;
+    } st[mx];
+    int sz=1;
+    void add(string s, int x){
+        int cur=0;
+        for(char c: s){
+            if(st[cur].next.count(c)){
+                cur=st[cur].next[c];
+            }else{
+                int node=st[cur].next[c]=sz++;
+                st[node].p=cur;
+                cur=node;
+            }
+        }
+        st[cur].end=min(st[cur].end, x);
+    }
+    int get_link(int x, char c){
+        return st[x].next.count(c)?st[x].next[c]:x==0?0:get_link(st[x].link, c);
+    }
+    void build_link(){
+        st[0].link=0;
+        queue<int>q;
+        q.push(0);
+        while(!q.empty()){
+            int x=q.front(); q.pop();
+            for(auto it: st[x].next){
+                st[it.S].link=(x?get_link(st[x].link, it.F):0);
+                st[st[it.S].link].rev_link.pb(it.S);
+                q.push(it.S);
+                //st[it.S].end+=st[st[it.S].link].end;
+                st[it.S].end=min(st[it.S].end, st[st[it.S].link].end);
+            }
+        }
+    }
+    
+    void print_all(){
+        for(int i=0; i<sz; i++){
+            cout<<i<<")"<<st[i].end<<"#"<<st[i].link<<"$ ";
+            for(auto it: st[i].next){
+                cout<<it.F<<","<<it.S<<" ";
+            }
+            cout<<"\n";
+        }
+    }
+
+    void query(string s, int x){
+        int cur=0;
+        for(char c: s){
+            while(cur && !st[cur].next.count(c)) cur=st[cur].link;
+            cur=st[cur].next[c];
+            if(st[cur].end<x){cout<<"YES\n"; return;}
+        }
+        cout<<"NO\n";
+    }
+
+
+}a_c;
+
+int main() {
+    Fast
+    int q;
+    cin>>q;
+    vector<pair<string, int>>v;
+    for(int i=1; i<=q; i++){
+        int t;
+        string s;
+        cin>>t>>s;
+        if(t) v.pb({s, i});
+        else a_c.add(s, i);
+    }
+    a_c.build_link();
+    //a_c.print_all();
+    for(auto x: v) a_c.query(x.F, x.S);
+}
