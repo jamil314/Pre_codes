@@ -1,0 +1,100 @@
+//                        Bismillahir Rahmanir Rahim
+//ALGO: Strongly connected componens (SCC) (Kosaraju's algorithm)
+//https://vjudge.net/solution/35048403
+#pragma GCC optimize("Ofast")
+#pragma GCC optimize ("unroll-loops")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#include<bits/stdc++.h>
+#define pb push_back
+#define F first
+#define S second
+#define vin(v) for(auto &x:v) cin>>x;
+#define vout(v) for(auto x:v) cout<<x;
+#define all(v) v.begin(), v.end()
+#define FILL(a, x) memset(a, x, sizeof(a))
+#define ll long long
+#define Fast ios_base::sync_with_stdio(false);cin.tie(NULL);
+#define INF INT_MAX
+#define MX 1000010
+#define mod 1000000007
+#define dout if(debug) cout
+#define FR(i, n) for(int i=0; i<n; i++)
+#define FOR(i, n) for(int i=1; i<=n; i++)
+const double Pi=acos(-1);
+using namespace std;
+int debug=01;
+vector<int>v[100010], u[100010], vv[100010];
+stack<int>st;
+int vis[100010], uis[100010], in[100010], out[100010], bns;
+vector<int>ans[100010];
+void dfs(int x){
+    vis[x]=1;
+    for(auto y:v[x]) if(!vis[y]) dfs(y);
+    st.push(x);
+}
+void dfs2(int x, int xx){
+    uis[x]=xx;
+    for(auto y:u[x]) if(!uis[y] && vis[y]) dfs2(y, xx);
+}
+void dfs3(int x, int xx){
+    if(vv[x].empty()){
+        bns++;
+        ans[xx].pb(x);
+    }
+    for(auto y:vv[x]) dfs3(y, xx);
+}
+void solve(){
+    int n;
+    cin>>n;
+    for(int i=1; i<=n; i++){
+        int x;
+        cin>>x;
+        v[i].pb(x);
+        u[x].pb(i);
+    }
+    vector<int>node;
+    for(int i=1; i<=n; i++) if(!vis[i]){
+        dfs(i);
+        while (!st.empty()){
+            int x=st.top();
+            st.pop();
+            if(uis[x]) continue;
+            dfs2(x, x);
+            node.pb(x);
+        }
+    }
+    for(int i=1; i<=n; i++){
+        int x=uis[i];
+        for(auto j:u[i]){
+            int y=uis[j];
+            if(x==y) continue;
+            vv[x].pb(y);
+            in[y]++;
+            out[x]++;
+        }
+    }
+    vector<int>roots;
+    for(auto x:node){
+        if(in[x]==0){
+            roots.pb(x);
+            dfs3(x, x);
+        }
+    }
+    if(roots.size()==1 && ans[roots[0]][0]==roots[0]){
+        cout<<"0\n";
+        return;
+    }
+    cout<<bns<<"\n";
+    for(int i=0; i<roots.size(); i++){
+        for(auto x:ans[roots[i]]) cout<<roots[(i+1)%roots.size()]<<" "<<x<<"\n";
+    }
+}
+int main() {
+    Fast
+    int tst=1;
+    // cin>>tst;
+    for(int T=1; T<=tst; T++){
+        //cout<<"Case "<<T<<": ";
+        solve();
+    }
+}
